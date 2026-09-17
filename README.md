@@ -46,12 +46,27 @@ nginx.conf           serves out/ and the redirects
 Dockerfile           builder stage -> nginx runtime
 ```
 
+## Local development
+
 ```bash
-npm run dev        # local dev
+npm install
+npm run dev        # dev server
+npm run lint       # eslint
 npm run build      # static export -> out/
+```
+
+Build and run the production image:
+
+```bash
 docker build -t portfolio . && docker run -p 8080:8080 portfolio
 ```
 
-Deploys on push to main via GitHub Actions (Workload Identity Federation, no
-service-account keys) to Cloud Run; `gazerah.com` and `www` are Cloud Run
-domain mappings — nginx 301s `www` to the apex and `/` to `/en/`.
+## Deployment
+
+Pushes to `main` deploy via GitHub Actions (Workload Identity Federation — no
+service-account keys) to Cloud Run. `gazerah.com` and `www` are Cloud Run domain
+mappings; nginx 301s `www` to the apex and `/` to `/en/`.
+
+## License
+
+[MIT](./LICENSE)
