@@ -1,13 +1,15 @@
 "use client";
 
+function isDark(root: HTMLElement) {
+  if (root.classList.contains("dark")) return true;
+  if (root.classList.contains("light")) return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
 export default function ThemeToggle() {
   function toggle() {
     const root = document.documentElement;
-    const dark = root.classList.contains("dark")
-      ? true
-      : root.classList.contains("light")
-        ? false
-        : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const dark = isDark(root);
     root.classList.remove("dark", "light");
     root.classList.add(dark ? "light" : "dark");
     try {
