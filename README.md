@@ -9,6 +9,19 @@ Personal portfolio for Gabriel Chaves — AI Engineer. Static Next.js (App Route
 Content in `src/data/profile.ts`, seeded from a private knowledge base
 (kb.yaml v3) — that KB stays the source of truth for resumes/LinkedIn.
 
+## Features
+
+- **Bilingual** — EN/PT route-based i18n under `/en` and `/pt`, no middleware.
+- **Static export** — `output: 'export'` emits plain HTML into `out/`; no Node
+  server at runtime.
+- **No-flash theme toggle** — light/dark preference persisted in `localStorage`
+  and applied before first paint.
+- **SEO built in** — per-locale metadata, Open Graph and Twitter cards,
+  `robots.txt`, a `sitemap.xml` with `hreflang` alternates, and schema.org
+  `Person` JSON-LD.
+- **Self-hosted** — nginx serves the export; `www` and the apex redirect to
+  `/en/`.
+
 ```bash
 npm run dev        # local dev
 npm run build      # static export -> out/
