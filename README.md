@@ -50,9 +50,10 @@ Dockerfile           builder stage -> nginx runtime
 
 ```bash
 npm install
-npm run dev        # dev server
-npm run lint       # eslint
-npm run build      # static export -> out/
+npm run dev            # dev server
+npm run lint           # eslint
+npm run build          # static export -> out/
+npm run sync:projects  # refresh verified project data (see below)
 ```
 
 Build and run the production image:
@@ -60,6 +61,25 @@ Build and run the production image:
 ```bash
 docker build -t portfolio . && docker run -p 8080:8080 portfolio
 ```
+
+## Project data
+
+Projects come from two places, merged in `src/data/profile.ts`:
+
+- **Hand-authored entries** — the ones written directly in `profile.ts`, with
+  curated highlights and copy in both languages.
+- **Verified entries** — appended from `src/data/projects.verified.json`, which is
+  generated from [gabrielchv/prova](https://github.com/gabrielchv/prova).
+
+In `prova`, every project claim cites a file in that project's repository, and
+its build fails if a citation no longer resolves. So a project listed there has
+been checked against the code, not just described.
+
+`npm run sync:projects` regenerates the JSON from the catalog in that repository
+(a sibling checkout at `../prova`, or the published catalog on GitHub). A
+hand-authored entry wins on a repository collision, so curated copy is never
+overwritten by generated text — but a verified project the site was missing is
+added automatically.
 
 ## Deployment
 

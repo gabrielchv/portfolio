@@ -8,8 +8,26 @@
 // - Yank EPC work is in progress: present tense, no delivered-outcome claims.
 
 import type { Locale } from "@/i18n/config";
+import verifiedCatalog from "./projects.verified.json";
 
 export type Localized = Record<Locale, string>;
+
+/**
+ * Shape of catalog/projects.json from gabrielchv/prova, where every project has
+ * had its claims checked against the repository at a recorded commit.
+ * Refresh with `npm run sync:projects`; the file is generated, never edited.
+ */
+interface VerifiedProject {
+  id: string;
+  name: string;
+  repo: string;
+  tagline: string;
+  tagline_pt: string;
+  stack: string[];
+  live_url: string | null;
+  claim_count: number;
+  verified_commit: string;
+}
 
 export interface Project {
   id: string;
@@ -58,7 +76,7 @@ export const identity = {
   } satisfies Localized,
 };
 
-export const projects: Project[] = [
+const handAuthored: Project[] = [
   {
     id: "autoapply",
     name: "AutoApply",
@@ -192,6 +210,35 @@ export const projects: Project[] = [
     repo: "https://github.com/gabrielchv/virt-ic",
   },
 ];
+
+// Verified projects come from gabrielchv/prova. A hand-authored entry above wins
+// on a repository collision, because it carries curated highlights and copy;
+// anything the site is missing is appended from the catalog. That asymmetry is
+// deliberate: the catalog can add a project to the site, but it cannot quietly
+// overwrite prose that was written on purpose.
+function repoKey(url: string): string {
+  return url
+    .replace(/^https?:\/\/github\.com\//i, "")
+    .replace(/\.git$/, "")
+    .toLowerCase();
+}
+
+const handAuthoredRepos = new Set(handAuthored.map((project) => repoKey(project.repo)));
+
+const fromCatalog: Project[] = (verifiedCatalog.projects as VerifiedProject[])
+  .filter((project) => !handAuthoredRepos.has(repoKey(project.repo)))
+  .map((project) => ({
+    id: project.id,
+    name: project.name,
+    featured: false,
+    tagline: { en: project.tagline, pt: project.tagline_pt },
+    highlights: [],
+    stack: project.stack,
+    repo: `https://github.com/${project.repo}`,
+    liveUrl: project.live_url ?? undefined,
+  }));
+
+export const projects: Project[] = [...handAuthored, ...fromCatalog];
 
 export const experience: Experience[] = [
   {
